@@ -16,14 +16,14 @@ console.log(bit.rangeSum(4, 5));
 console.log(bit.rangeSum(1, 8));
 console.log(bit.getTreeArray());
 console.log(bit.getArray());
-//console.log(bit.getUpdatePath(3)); // [3, 4, 8]
-//console.log(bit.getUpdatePath(5)); // [5, 6, 8]
-//console.log(bit.getUpdatePath(6)); // [6, 8]
-//console.log(bit.getQueryPath(6));
+console.log(bit.getUpdatePath(3)); // [3, 4, 8]
+console.log(bit.getUpdatePath(5)); // [5, 6, 8]
+console.log(bit.getUpdatePath(6)); // [6, 8]
+console.log(bit.getQueryPath(6));
 console.log(bit.getQueryPath(15));
-//console.log(bit.getQueryPath(0));
-//console.log(bit.getCoverRange(6));
-//console.log(bit.getCoverRange(8));
-//console.log(bit.getCoverRange(3));
+console.log(bit.getQueryPath(0));
+console.log(bit.getCoverRange(6));
+console.log(bit.getCoverRange(8));
+console.log(bit.getCoverRange(3));
 console.log(bit.getTreeInfo());
 // test: out of range bit.add(0, 5);
