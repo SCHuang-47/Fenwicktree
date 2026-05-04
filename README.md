@@ -1,3 +1,2 @@
 # Fenwicktree
-Useing Typescript
-This project visualizes a Fenwick Tree.
+This project uses TypeScript to visualizes a Fenwick Tree.
