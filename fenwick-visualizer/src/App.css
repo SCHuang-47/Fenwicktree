@@ -1,0 +1,54 @@
+.array-row {
+  display: flex;
+  gap: 8px;
+}
+
+.cell {
+  border: 1px solid black;
+  padding: 12px;
+  width: 60px;
+  text-align: center;
+}
+
+.cell-value {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.cell-index {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.app {
+  width: 100%;
+  min-height: 100vh;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.highlighted {
+  background-color: yellow;
+}
+
+.highlight-add {
+  background-color: lightblue;
+}
+
+.highlight-subtract {
+  background-color: rgb(255, 122, 122);
+}
+
+.panel {
+  border: 1px solid #ddd;
+  padding: 16px;
+  margin-top: 16px;
+  border-radius: 8px;
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
