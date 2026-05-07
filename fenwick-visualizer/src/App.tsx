@@ -2,9 +2,10 @@ import "./App.css";
 import { useState } from "react";
 
 function App() {
+  const initialArray = generateFibonacciArray(8);
   const [size, setSize] = useState(8);
-  const [array, setArray] = useState([0, 0, 0, 0, 0, 0, 0, 0]);
-  const [bitArray, setBitArray] = useState([0, 0, 0, 0, 0, 0, 0, 0]);
+  const [array, setArray] = useState(initialArray);
+  const [bitArray, setBitArray] = useState(buildFenwickArray(initialArray));
   const [targetIndex, setTargetIndex] = useState(1);
   const [queryIndex, setQueryIndex] = useState(1);
   const [delta, setDelta] = useState(1);
@@ -21,6 +22,32 @@ function App() {
   const [activeBitIndex, setActiveBitIndex] = useState(0);
   const [animationSpeed, setAnimationSpeed] = useState(700);
   const [coverageMode, setCoverageMode] = useState("");
+
+  function generateFibonacciArray(size: number) {
+    const result: number[] = [];
+
+    for (let i = 0; i < size; i++) {
+      if (i === 0 || i === 1) {
+        result.push(1);
+      } else {
+        result.push(result[i - 1] + result[i - 2]);
+      }
+    }
+
+    return result;
+  }
+
+  function buildFenwickArray(array: number[]) {
+    const bit = Array.from({ length: array.length }, () => 0);
+
+    for (let index = 1; index <= array.length; index++) {
+      for (let i = index; i <= array.length; i += lowbit(i)) {
+        bit[i - 1] += array[index - 1];
+      }
+    }
+
+    return bit;
+  }
 
   function lowbit(x: number) {
     return x & -x;
@@ -42,20 +69,6 @@ function App() {
     setActiveCoverRight(0);
   }
 
-  function animateTrace(trace: number[]) {
-    trace.forEach((bitIndex, step) => {
-      setTimeout(() => {
-        showCoverage(bitIndex);
-      }, step * animationSpeed);
-    });
-
-    setTimeout(() => {
-      setActiveBitIndex(0);
-      setActiveCoverLeft(0);
-      setActiveCoverRight(0);
-    }, trace.length * animationSpeed);
-  }
-
   return (
     <div className="app">
       <h1>Fenwick Tree Visualizer</h1>
@@ -65,7 +78,7 @@ function App() {
           <h2>Setup</h2>
 
           <div className="control-row">
-            <label>Size(1 ~ 20):</label>
+            <label>Size(1 ~ 36):</label>
             <input
               type="number"
               value={size}
@@ -73,12 +86,12 @@ function App() {
             />
             <button
               onClick={() => {
-                if (size < 1 || size > 20) {
+                if (size < 1 || size > 36) {
                   return;
                 }
 
-                const generatedArray = Array.from({ length: size }, () => 0);
-                const generatedBitArray = Array.from({ length: size }, () => 0);
+                const generatedArray = generateFibonacciArray(size);
+                const generatedBitArray = buildFenwickArray(generatedArray);
 
                 setOperation("");
                 setArray(generatedArray);
@@ -89,9 +102,10 @@ function App() {
                 setSubtractTrace([]);
                 setQueryResult(0);
                 clearCoverage();
+                setCoverageMode("");
               }}
             >
-              Generate array
+              Reset
             </button>
           </div>
           <div className="control-row">
@@ -99,7 +113,15 @@ function App() {
             <input
               type="number"
               value={animationSpeed}
-              onChange={(event) => setAnimationSpeed(Number(event.target.value))}
+              onChange={(event) => {
+                const newSpeed = Number(event.target.value);
+
+                if(newSpeed <= 0){
+                  return;
+                }
+
+                setAnimationSpeed(Number(event.target.value));
+              }}
             />    
           </div>
         </section>
@@ -127,28 +149,46 @@ function App() {
                 if (targetIndex < 1 || targetIndex > array.length) {
                   return;
                 }
-
+                setCoverageMode("");
                 const newArray = [...array];
-                const newBitArray = [...bitArray];
                 const newTrace: number[] = [];
+                for (let i = targetIndex; i <= array.length; i += lowbit(i)) {
+                  newTrace.push(i);
+                }
+                setTrace(newTrace);
+                setHighlightTrace([]);
+
+                newTrace.forEach((bitIndex, step) => {
+                  setTimeout(() => {
+                    showCoverage(bitIndex);
+
+                    setHighlightTrace((previousHighlightTrace) => [
+                       ...previousHighlightTrace,
+                       bitIndex,
+                       ]);
+
+                    
+                    setBitArray((previousBitArray) => {
+                      const nextBitArray = [...previousBitArray];
+                      nextBitArray[bitIndex - 1] += delta;
+                      return nextBitArray;
+                    });
+                  }, step * animationSpeed);
+                });
+
+                setTimeout(() => {
+                  setHighlightTrace([]);
+                  clearCoverage();
+                }, (newTrace.length + 1) * animationSpeed);
 
                 newArray[targetIndex - 1] = newArray[targetIndex - 1] + delta;
 
-                for (let i = targetIndex; i <= array.length; i += lowbit(i)) {
-                  newBitArray[i - 1] = newBitArray[i - 1] + delta;
-                  newTrace.push(i);
-                }
-
                 setOperation("Update");
                 setArray(newArray);
-                setBitArray(newBitArray);
-                setTrace(newTrace);
                 setAddTrace([]);
                 setSubtractTrace([]);
                 setQueryResult(0);
-                clearCoverage();
 
-                animateTrace(newTrace);
               }}
             >
               Update target cell
@@ -183,12 +223,10 @@ function App() {
                   ? "cell highlight-add"
                   : isSubtract
                   ? "cell highlight-subtract"
-                  : operation === "Query" || operation === "Update"
-                  ? bitIndex === activeBitIndex
+                  : operation === "Update" || operation === "Query"
+                  ? highlightTrace.includes(bitIndex)
                     ? "cell highlighted"
                     : "cell"
-                  : highlightTrace.includes(bitIndex)
-                  ? "cell highlighted"
                   : "cell"
               }
               key={index}
@@ -239,7 +277,7 @@ function App() {
               if (queryIndex < 1 || queryIndex > array.length) {
                 return;
               }
-
+              setCoverageMode("");
               const newTrace: number[] = [];
               let sum = 0;
 
@@ -251,11 +289,25 @@ function App() {
               setOperation("Query");
               setQueryResult(sum);
               setTrace(newTrace);
-              setHighlightTrace(newTrace);
+              setHighlightTrace([]);
               setAddTrace([]);
               setSubtractTrace([]);
+              clearCoverage();
 
-              animateTrace(newTrace);
+              newTrace.forEach((bitIndex, step) => {
+                setTimeout(() => {
+                  showCoverage(bitIndex);
+
+                  setHighlightTrace((previousHighlightTrace) => [
+                    ...previousHighlightTrace,
+                    bitIndex,
+                  ]);
+                }, step * animationSpeed);
+              });
+              setTimeout(() => {
+                setHighlightTrace([]);
+                clearCoverage();
+              }, (newTrace.length + 1) * animationSpeed);
             }}
           >
             Query prefix sum
@@ -307,20 +359,39 @@ function App() {
               setQueryResult(rightSum - leftSum);
               setTrace([...rightTrace, ...leftTrace]);
               setHighlightTrace([]);
-              setAddTrace(rightTrace);
-              setSubtractTrace(leftTrace);
+              setAddTrace([]);
+              setSubtractTrace([]);
               clearCoverage();
-              setCoverageMode("add");
-              animateTrace(rightTrace);
-              setTimeout(() => {
-                setCoverageMode("subtract");
-                animateTrace(leftTrace);
-              }, rightTrace.length * animationSpeed);
+              
+              rightTrace.forEach((bitIndex, step) => {
+                setTimeout(() => {
+                  setCoverageMode("add");
+                  showCoverage(bitIndex);
+              
+                  setAddTrace((previousAddTrace) => [
+                    ...previousAddTrace,
+                    bitIndex,
+                  ]);
+                }, step * animationSpeed);
+              });
+
+              leftTrace.forEach((bitIndex, step) => {
+                setTimeout(() => {
+                  setCoverageMode("subtract");
+                  showCoverage(bitIndex);
+
+                  setSubtractTrace((previousSubtractTrace) => [
+                    ...previousSubtractTrace,
+                    bitIndex,
+                  ]);
+                }, (rightTrace.length + step) * animationSpeed);
+              });
 
               setTimeout(() => {
                 setAddTrace([]);
                 setSubtractTrace([]);
                 setCoverageMode("");
+                clearCoverage();
               }, (rightTrace.length + leftTrace.length + 1) * animationSpeed);
             }}
           >
@@ -332,7 +403,9 @@ function App() {
       <section className="panel">
         <h2>{operation || "Operation"} Trace</h2>
         <p>{trace.join(" → ")}</p>
-        <p>Result: {queryResult}</p>
+        {(operation === "Query" || operation === "Range Query") && (
+          <p>Result: {queryResult}</p>
+        )}
 
         <div className="legend">
           <div className="legend-row">
@@ -343,9 +416,9 @@ function App() {
             <span>
               <span className="legend-subtract">Orange</span>: prefixSum(left - 1)
             </span>
-            
+
             <span>
-              <span className="legend-overlap">Gray</span>: overlap / canceled
+              <span className="legend-overlap">Overlap</span>: added and subtracted
             </span>
 
             <span>
