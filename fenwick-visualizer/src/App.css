@@ -1,6 +1,77 @@
+.app {
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+h1 {
+  margin-top: 0;
+  margin-bottom: 18px;
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+/* Panels */
+
+.panel {
+  border: 1px solid #ddd;
+  padding: 18px 20px;
+  margin-top: 16px;
+  border-radius: 8px;
+}
+
+.top-panels {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  margin-bottom: 18px;
+}
+
+.top-panels .panel {
+  flex: 1;
+  margin-top: 0;
+}
+
+/* Controls */
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.control-row label {
+  font-size: 20px;
+}
+
+.control-row input {
+  height: 26px;
+  box-sizing: border-box;
+  padding: 1px 6px;
+  font-size: 13px;
+}
+
+.control-row button {
+  padding: 2px 8px;
+  font-size: 13px;
+  line-height: 1.1;
+  height: 26px;
+  box-sizing: border-box;
+}
+
+/* Array cells */
+
 .array-row {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
 }
 
 .cell {
@@ -20,12 +91,7 @@
   font-weight: bold;
 }
 
-.app {
-  width: 100%;
-  min-height: 100vh;
-  padding: 24px;
-  box-sizing: border-box;
-}
+/* Highlights */
 
 .highlighted {
   background-color: yellow;
@@ -39,16 +105,77 @@
   background-color: rgb(255, 122, 122);
 }
 
-.panel {
-  border: 1px solid #ddd;
-  padding: 16px;
-  margin-top: 16px;
-  border-radius: 8px;
+/* Coverage */
+
+.coverage-panel {
+  max-height: 220px;
+  overflow-y: auto;
 }
 
-.control-row {
+.coverage-text {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.coverage-row {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  gap: 4px;
   margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.coverage-cell {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.covered {
+  background-color: lightblue;
+}
+
+.covered-add {
+  background-color: lightblue;
+}
+
+.covered-subtract {
+  background-color: rgb(255, 122, 122);
+}
+
+.highlight-overlap {
+  background-color: lightgray;
+}
+
+.legend {
+  margin-top: 12px;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.legend-row {
+  display: flex;
+  gap: 24px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.legend-add {
+  color: #0284c7;
+  font-weight: bold;
+}
+
+.legend-subtract {
+  color: rgb(220, 80, 80);
+  font-weight: bold;
+}
+
+.legend-overlap {
+  color: gray;
+  font-weight: bold;
+}
+
+.legend-current {
+  color: goldenrod;
+  font-weight: bold;
 }
