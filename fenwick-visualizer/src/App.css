@@ -179,3 +179,69 @@ h2 {
   color: goldenrod;
   font-weight: bold;
 }
+
+.tree-panels {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.tree-section {
+  flex: 1;
+  min-width: 280px;
+}
+
+.tree-edge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.tree-node {
+  border: 1px solid black;
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.tree-arrow {
+  font-weight: bold;
+}
+
+.tree-level {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 10px 0;
+}
+
+.tree-level-label {
+  width: 70px;
+  font-weight: bold;
+}
+
+.tree-level-nodes {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tree-svg {
+  border: 1px solid #ddd;
+  width: 100%;
+}
+
+.tree-svg circle {
+  fill: white;
+  stroke: black;
+  stroke-width: 2;
+}
+
+.tree-svg line {
+  stroke-width: 2;
+}

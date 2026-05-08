@@ -2,7 +2,7 @@ import "./App.css";
 import { useState } from "react";
 
 function App() {
-  const initialArray = generateFibonacciArray(8);
+  const initialArray = generateArray(8);
   const [size, setSize] = useState(8);
   const [array, setArray] = useState(initialArray);
   const [bitArray, setBitArray] = useState(buildFenwickArray(initialArray));
@@ -22,16 +22,19 @@ function App() {
   const [activeBitIndex, setActiveBitIndex] = useState(0);
   const [animationSpeed, setAnimationSpeed] = useState(700);
   const [coverageMode, setCoverageMode] = useState("");
+  const treeSvgWidth = 1700;
+  const queryLayout = buildQueryLayout();
+  const updateLayout = buildUpdateLayout();
+  const [currentPositions, setCurrentPositions] = useState(queryLayout.positions);
+  const [treeMode, setTreeMode] = useState<"query" | "update">("query");
+  const activeLayout = treeMode === "query" ? queryLayout : updateLayout;
+  const TreeHeight = Math.max(...Object.values(updateLayout.positions).map((pos) => pos.y)) + 40;
 
-  function generateFibonacciArray(size: number) {
+  function generateArray(size: number) {
     const result: number[] = [];
 
     for (let i = 0; i < size; i++) {
-      if (i === 0 || i === 1) {
-        result.push(1);
-      } else {
-        result.push(result[i - 1] + result[i - 2]);
-      }
+      result.push(i);
     }
 
     return result;
@@ -57,6 +60,122 @@ function App() {
     return index - lowbit(index) + 1;
   }
 
+  function queryParent(i: number){
+    return i - lowbit(i);
+  }
+
+  function updateNext(i: number){
+    return i+lowbit(i);
+  }
+
+  function queryLevel(i: number): number{
+    let now: number = i; 
+    let cnt: number = 0; 
+    while (now !== 0) { 
+      cnt++; 
+      now = queryParent(now); 
+    } 
+    return cnt; 
+  }
+
+  function updateLevel(i: number): number{
+    let now: number = i; 
+    let cnt: number = 0; 
+    while (now <= array.length) { 
+      cnt++; 
+      now = updateNext(now); 
+    } 
+    return cnt; 
+  }
+
+  function buildQueryLayout() {
+    const positions: Record<number, { x: number; y: number }> = {};
+    const edges: { from: number; to: number }[] = [];
+
+    const svgWidth = treeSvgWidth;
+    const normalGapX = 90;
+    const minGapX = 35;
+    const marginX = 40;
+
+    const gapX = Math.max(
+      minGapX,
+      Math.min(normalGapX, (svgWidth - 2 * marginX) / array.length)
+    );
+
+    const gapY = 60;
+    const startX = marginX;
+    const startY = 40;
+
+    positions[0] = {
+      x: startX,
+      y: startY,
+    };
+
+    for (let bitIndex = 1; bitIndex <= array.length; bitIndex++) {
+      const parent = queryParent(bitIndex);
+
+      positions[bitIndex] = {
+        x: startX + (bitIndex) * gapX,
+        y: startY + queryLevel(bitIndex) * gapY,
+      };
+
+      edges.push({
+        from: parent,
+        to: bitIndex,
+      });
+    }
+
+    return {
+      positions,
+      edges,
+    };
+  }
+
+  function buildUpdateLayout() {
+    const positions: Record<number, { x: number; y: number }> = {};
+    const edges: { from: number; to: number }[] = [];
+    
+    const svgWidth = treeSvgWidth;
+    const normalGapX = 90;
+    const minGapX = 35;
+    const marginX = 40;
+
+    const gapX = Math.max(
+      minGapX,
+      Math.min(normalGapX, (svgWidth - 2 * marginX) / array.length)
+    );
+
+    const gapY = 60;
+    const startX = marginX;
+    const startY = 40;
+
+    positions[0] = {
+      x: startX,
+      y: startY,
+    };
+
+    for (let bitIndex = 1; bitIndex <= array.length; bitIndex++) {
+      const next = updateNext(bitIndex);
+
+      positions[bitIndex] = {
+        x: startX + (bitIndex) * gapX,
+        y: startY + updateLevel(bitIndex) * gapY,
+      };
+
+      if (next <= array.length) {
+        edges.push({
+          from: bitIndex,
+          to: next,
+        });
+      }
+    }
+
+    return {
+      positions,
+      edges,
+    };
+  }
+
   function showCoverage(bitIndex: number) {
     setActiveBitIndex(bitIndex);
     setActiveCoverLeft(coverLeft(bitIndex));
@@ -67,6 +186,36 @@ function App() {
     setActiveBitIndex(0);
     setActiveCoverLeft(0);
     setActiveCoverRight(0);
+  }
+
+  function animateTreeTo(targetPositions: Record<number, { x: number; y: number }>) {
+    const startPositions = currentPositions;
+    const frames = 30;
+    let frame = 0;
+
+    const timer = setInterval(() => {
+      frame++;
+      const progress = frame / frames;
+
+      const nextPositions: Record<number, { x: number; y: number }> = {};
+
+      Object.keys(targetPositions).forEach((nodeKey) => {
+        const node = Number(nodeKey);
+        const start = startPositions[node] ?? targetPositions[node];
+        const target = targetPositions[node];
+
+        nextPositions[node] = {
+          x: start.x + (target.x - start.x) * progress,
+          y: start.y + (target.y - start.y) * progress,
+        };
+      });
+
+      setCurrentPositions(nextPositions);
+
+      if (frame >= frames) {
+        clearInterval(timer);
+      }
+    }, 16);
   }
 
   return (
@@ -90,7 +239,7 @@ function App() {
                   return;
                 }
 
-                const generatedArray = generateFibonacciArray(size);
+                const generatedArray = generateArray(size);
                 const generatedBitArray = buildFenwickArray(generatedArray);
 
                 setOperation("");
@@ -146,6 +295,8 @@ function App() {
 
             <button
               onClick={() => {
+                setTreeMode("update");
+                animateTreeTo(updateLayout.positions);
                 if (targetIndex < 1 || targetIndex > array.length) {
                   return;
                 }
@@ -237,6 +388,46 @@ function App() {
           );
         })}
       </div>
+      
+      <section className="panel">
+        <h2>{treeMode === "query" ? "Query Tree" : "Update Tree"}</h2>
+          <svg className="tree-svg" width={treeSvgWidth} height={TreeHeight}>
+            {activeLayout.edges.map((edge) => {
+              const from = currentPositions[edge.from];
+              const to = currentPositions[edge.to];
+
+              if (!from || !to) {
+                return null;
+              }
+
+              return (
+                <line
+                  key={`${edge.from}-${edge.to}`}
+                  x1={from.x}
+                  y1={from.y}
+                  x2={to.x}
+                  y2={to.y}
+                  stroke="black"
+                />
+              );
+            })}
+
+            {Object.entries(currentPositions).map(([node, pos]) => (
+              <g key={node}>
+                <circle cx={pos.x} cy={pos.y} r="18" />
+                <text
+                  x={pos.x}
+                  y={pos.y}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                >
+                  {node}
+                </text>
+              </g>
+            ))}
+          </svg>
+
+      </section>
 
       <section className="panel coverage-panel">
         <h2>Coverage</h2>
@@ -274,6 +465,8 @@ function App() {
 
           <button
             onClick={() => {
+              setTreeMode("query");
+              animateTreeTo(queryLayout.positions);
               if (queryIndex < 1 || queryIndex > array.length) {
                 return;
               }
@@ -331,6 +524,8 @@ function App() {
 
           <button
             onClick={() => {
+              setTreeMode("query");
+              animateTreeTo(queryLayout.positions);
               if (
                 leftIndex < 1 ||
                 rightIndex < 1 ||
