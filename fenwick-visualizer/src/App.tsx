@@ -432,13 +432,14 @@ function App() {
             const isAdd = addTrace.includes(nodeNumber);
             const isSubtract = subtractTrace.includes(nodeNumber);
             const isOverlap = isAdd && isSubtract;
+            const textNumber = Number(node);
 
             return (
               <g key={node}>
                 <circle
                   cx={pos.x}
                   cy={pos.y}
-                  r="18"
+                  r="22"
                   className={
                     isOverlap
                       ? "tree-node-overlap"
@@ -453,12 +454,24 @@ function App() {
                 />
                 <text
                   x={pos.x}
-                  y={pos.y}
+                  y={pos.y - 6}
                   textAnchor="middle"
                   dominantBaseline="middle"
+                  className="tree-node-index"
                 >
                   {node}
                 </text>
+                {textNumber !== 0 && (
+                  <text
+                    x={pos.x}
+                    y={pos.y + 9}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="tree-node-value"
+                  >
+                    {bitArray[textNumber - 1]}
+                  </text>
+                )}
               </g>
             );
           })}

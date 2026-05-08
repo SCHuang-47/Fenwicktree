@@ -172,7 +172,7 @@ h2 {
 }
 
 .covered-add {
-  background-color: lightblue;
+  background-color: rgb(98, 216, 255);
 }
 
 .covered-subtract {
@@ -210,4 +210,16 @@ h2 {
 .legend-current {
   color: goldenrod;
   font-weight: bold;
+}
+
+.tree-svg .tree-node-index {
+  font-size: 13px;
+  font-weight: 500;
+  fill: gray;
+}
+
+.tree-svg .tree-node-value {
+  font-size: 13px;
+  font-weight: 1000;
+  fill: #1f1e33;
 }
