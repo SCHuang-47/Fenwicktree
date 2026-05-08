@@ -15,8 +15,6 @@ h2 {
   margin-bottom: 12px;
 }
 
-/* Panels */
-
 .panel {
   border: 1px solid #ddd;
   padding: 18px 20px;
@@ -35,8 +33,6 @@ h2 {
   flex: 1;
   margin-top: 0;
 }
-
-/* Controls */
 
 .control-row {
   display: flex;
@@ -65,8 +61,6 @@ h2 {
   box-sizing: border-box;
 }
 
-/* Array cells */
-
 .array-row {
   display: flex;
   gap: 8px;
@@ -91,21 +85,67 @@ h2 {
   font-weight: bold;
 }
 
-/* Highlights */
-
 .highlighted {
   background-color: yellow;
 }
 
 .highlight-add {
-  background-color: lightblue;
+  background-color: rgb(98, 216, 255);
 }
 
 .highlight-subtract {
   background-color: rgb(255, 122, 122);
 }
 
-/* Coverage */
+.highlight-overlap {
+  background-color: mediumpurple;
+  border: 2px solid #666;
+}
+
+.tree-svg {
+  border: 1px solid #ddd;
+  width: 100%;
+}
+
+.tree-svg line {
+  stroke-width: 2;
+}
+
+.tree-svg text {
+  font-size: 12px;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.tree-svg .tree-node-normal {
+  fill: white;
+  stroke: black;
+  stroke-width: 2;
+}
+
+.tree-svg .tree-node-highlighted {
+  fill: yellow;
+  stroke: black;
+  stroke-width: 2;
+}
+
+.tree-svg .tree-node-add {
+  fill: rgb(98, 216, 255);
+  stroke: black;
+  stroke-width: 2;
+}
+
+.tree-svg .tree-node-subtract {
+  fill: rgb(255, 122, 122);
+  stroke: black;
+  stroke-width: 2;
+}
+
+.tree-svg .tree-node-overlap {
+  fill: mediumpurple;
+  stroke: black;
+  stroke-width: 2;
+}
 
 .coverage-panel {
   max-height: 220px;
@@ -131,20 +171,12 @@ h2 {
   box-sizing: border-box;
 }
 
-.covered {
-  background-color: lightblue;
-}
-
 .covered-add {
   background-color: lightblue;
 }
 
 .covered-subtract {
   background-color: rgb(255, 122, 122);
-}
-
-.highlight-overlap {
-  background-color: rgb(160, 135, 211);
 }
 
 .legend {
@@ -178,70 +210,4 @@ h2 {
 .legend-current {
   color: goldenrod;
   font-weight: bold;
-}
-
-.tree-panels {
-  display: flex;
-  gap: 32px;
-  flex-wrap: wrap;
-}
-
-.tree-section {
-  flex: 1;
-  min-width: 280px;
-}
-
-.tree-edge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 6px 0;
-}
-
-.tree-node {
-  border: 1px solid black;
-  border-radius: 999px;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-}
-
-.tree-arrow {
-  font-weight: bold;
-}
-
-.tree-level {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin: 10px 0;
-}
-
-.tree-level-label {
-  width: 70px;
-  font-weight: bold;
-}
-
-.tree-level-nodes {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.tree-svg {
-  border: 1px solid #ddd;
-  width: 100%;
-}
-
-.tree-svg circle {
-  fill: white;
-  stroke: black;
-  stroke-width: 2;
-}
-
-.tree-svg line {
-  stroke-width: 2;
 }
